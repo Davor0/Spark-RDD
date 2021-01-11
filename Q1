@@ -1,0 +1,51 @@
+1.	Create RDDs in three different ways.
+
+1. From local collection
+
+To create Rdd from local collection you will need to use parallelize method on spark within spark session
+
+In Scala
+
+val myCollection = "Apache Spark is a fast, in-memory data processing engine"
+
+.split(" ")
+
+val words = spark.sparkContext.parallelize(myCollection, 2)
+
+In above example, we are creating two partitions
+
+In Python
+
+myCollection = "Apache Spark is a fast, in-memory data processing engine"\
+
+.split(" ")
+
+words = spark.sparkContext.parallelize(myCollection, 2)
+
+2. From Data Sources
+
+you can create RDDs from data sources or text files.
+
+val myRdd = spark.sparkContext.textFile("/path/TextFiles")
+This creates an RDD for which each record in the RDD represents a line in that text file or files.
+spark.sparkContext.wholeTextFiles("/path/TextFiles")
+In this case each text file is a single record. In this RDD, the name of the file is the first object and the value of the text file is the second string object.
+3. From existing DataFrames and DataSet
+
+This is easiest way to create RDD. To convert DataSet or DataFrame to RDD just use rdd method on any of these data type.
+
+val myRdd = spark.range(500).rdd
+
+But Python has only DataFrames you will get an RDD of type Row. To operate on this data you will have to convert this Row Object to correct data type or extract value out of it.
+
+In scala
+
+val myRdd = spark.range(10).toDF().rdd.map(rowObject => rowObject.getLong(0))
+
+In Python
+
+val myRdd = spark.range(10).toDF("id").rdd.map(lambda row: row[0])
+
+4. From existing RDD
+
+By transforming the existing RDD you can Create new RDD. You can use transformations like map, flatmap, filter.
