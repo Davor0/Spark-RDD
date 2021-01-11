@@ -1,0 +1,72 @@
+// Write a program to convert all words in a file to uppercase.
+
+rdd_2.map(lambda c:c.upper()).collect()
+
+//Write a program to convert all words in a file to lowercase
+
+rdd_2.map(lambda c:c.lower()).collect()
+
+//Write a program to capitalize first letter of each words in file (use string capitalize() method).
+
+capital=rdd_2.flatMap(lambda a:a.split(" ")).map(lambda c:c.capitalize()).collect()
+" ".join(capital)
+
+//Find the longest length of word from given set of words.
+
+
+longest_word=rdd_2.flatMap(lambda x:x.split(" "))
+longest_word.map(lambda nu:(len(nu),nu)).max()[1]
+
+//Given registration number, generate a key-value pair of Registration Number and Corresponding Branch.
+
+reg_no=[6027]
+info=spark.sparkContext.parallelize(reg_no,2)
+ans=info.map(lambda reg:('VLSI',reg) if reg>2000 and reg<3000 
+        else ('MS',reg) if reg>1000 and reg<2000
+        else ('ES',reg) if reg>3000 and reg<4000
+        else ('MSc',reg) if reg>4000 and reg<5000
+        else ('CC',reg) if reg>5000 and reg<6000
+        else ('BDA',reg) if reg>6000 and reg<7000
+        else ('HDA',reg))
+ans.collect()
+
+//A text file contains data about citizens of country. 
+Fields(information in file) are Name, dob, Phone, email and state name. 
+Another file contains mapping of state names to state code like Karnataka is codes as KA, 
+TamilNadu as TN, Kerala KL etc. Compress the file will by changing full state name to state code
+
+
+details=spark.sparkContext.textFile("user_details.txt")
+code=spark.sparkContext.textFile("state_codes_of_different_states.txt")
+details_rdd=details.map(lambda x:x.split(",")).collect()
+code_rdd=code.map(lambda y:y.split(",")).collect()
+for i in range(len(details_rdd)):
+    for j in range(len(code_rdd)):  
+        if details_rdd[i][4]==code_rdd[j][0]:
+            details_rdd[i][4]=code_rdd[j][1]
+details_rdd
+
+stRDD = spark.sparkContext.textFile('state_codes_of_different_states.txt')
+stateKey = stRDD.map(lambda word: (word.split(',')[0], word.split(',')[1]))
+
+code_dict = {}
+for val in stateKey.collect():
+    code_dict[val[0]] = val[1]
+    
+code_dict
+
+mapData = spark.sparkContext.broadcast(code_dict)
+
+cityRdd = spark.sparkContext.textFile('user_details.txt')
+print(cityRdd.collect())
+def abc(state,codes):
+    splitData = state.split(',')  
+    print(splitData)
+    splitData[4] = codes.value.get(splitData[4])
+    newData = ' '
+    newData = newData.join(splitData)
+    
+    return newData
+    
+mapCitizen = cityRdd.map(lambda data: abc(data,mapData))
+mapCitizen.collect()

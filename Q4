@@ -1,3 +1,0 @@
-Write a program to convert all words in a file to uppercase.
-
-rdd_2.map(lambda c:c.upper()).collect()
